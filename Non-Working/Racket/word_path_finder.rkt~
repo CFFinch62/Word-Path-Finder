@@ -1,0 +1,43 @@
+#lang racket
+
+(define (read-word-list filename)
+  (with-open-file ([in filename] #:mode 'read)
+    (for/list ([line (in-lines in)])
+      (string-trim line))))
+
+(define (one-letter-diff? word1 word2)
+  (and (= (string-length word1) (string-length word2))
+       (= 1 (count #t (map char=? (string->list word1) (string->list word2))))))
+
+(define (find-path word-list start-word target-word)
+  (let ([word-set (set (map string->symbol word-list))])  ; Use a set for efficient lookup
+    (letrec ([find-path-recursive (lambda (current-word path)
+                                    (cond
+                                      [(equal? current-word target-word) (reverse (cons current-word path))]
+                                      [else
+                                       (for/fold ([shortest-path #f]) ([neighbor (set-fold (lambda (w r) (if (one-letter-diff? (symbol->string current-word) (symbol->string w)) (set-add r w) r)) word-set (set))])
+                                         (let ([new-path (find-path-recursive neighbor (cons current-word path))])
+                                           (cond
+                                             [(and new-path (or (not shortest-path) (< (length new-path) (length shortest-path)))) new-path]
+                                             [else shortest-path]))]))])
+      (find-path-recursive (string->symbol start-word) null))))
+
+
+(define (main filename)
+  (let ([word-list (read-word-list filename)])
+    (let ([start-word (list-ref word-list (random (length word-list)))]
+          [target-word (list-ref word-list (random (length word-list)))]
+          [path (find-path word-list start-word target-word)])
+      (cond
+        [path
+         (printf "Path found! Steps: ~a\n" (- (length path) 1))
+         (for ([word path]) (printf "~a\n" word))]
+        [else
+         (printf "No path found between ~a and ~a.\n" start-word target-word)]))))
+
+
+(define (string->symbol str) (string->symbol str))
+(define (symbol->string sym) (symbol->string sym))
+
+; Example usage (assuming words.txt exists in the same directory):
+(main "TWL4CRLF.txt")

@@ -1,0 +1,128 @@
+to findpath :startword :targetword :wordlist
+  ; Early exit if words are the same
+  if :startword = :targetword [
+    print sentence [Found path with 0 steps:] :startword
+    output []
+  ]
+  
+  ; Convert list to set for faster lookups
+  localmake "wordset array count :wordlist
+  foreach :wordlist [setitem repcount :wordset ?]
+  
+  ; Initialize queue and visited set
+  localmake "queue list list :startword (list :startword)
+  localmake "visited array 1
+  setitem 1 :visited :startword
+  localmake "visitcount 1
+  
+  while [not empty? :queue] [
+    localmake "current first :queue
+    localmake "currentword first :current
+    localmake "currentpath last :current
+    make "queue butfirst :queue
+    
+    ; Try all possible variations
+    foreach generatevariations :currentword [
+      if and memberp ? :wordset [not memberp ? :visited] [
+        if ? = :targetword [
+          ; Found target word
+          localmake "finalpath lput ? :currentpath
+          print sentence [Found path with] (count :currentpath)
+          print sentence [steps:] (reduce "word :finalpath [ -> ])
+          output :finalpath
+        ]
+        
+        ; Add to queue and mark as visited
+        make "queue lput (list ? lput ? :currentpath) :queue
+        make "visitcount :visitcount + 1
+        setitem :visitcount :visited ?
+      ]
+    ]
+  ]
+  
+  ; No path found
+  print sentence [No path found between] :startword
+  print sentence [and] :targetword
+  output []
+end
+
+to generatevariations :word
+  ; Generate all possible one-letter variations
+  localmake "variations []
+  repeat count :word [
+    localmake "pos repcount
+    foreach "ABCDEFGHIJKLMNOPQRSTUVWXYZ [
+      localmake "newword word
+      setitem :pos :newword ?
+      make "variations lput :newword :variations
+    ]
+  ]
+  output :variations
+end
+
+to loadwords :filename
+  ; Try to open file
+  catch "error [
+    openread :filename
+    localmake "words []
+    
+    ; Read words line by line
+    while [not eofp] [
+      localmake "word readword
+      make "words lput :word :words
+    ]
+    close :filename
+    
+    print (sentence [Successfully loaded] (count :words) [words from] :filename)
+    print []
+    output :words
+  ]
+  print sentence [Error: Could not open file] :filename
+  output []
+end
+
+to main
+  cleartext
+  wordpath
+end
+
+to selectwords :wordlist :length
+  ; Find valid words of specified length
+  localmake "validwords filter [? -> count ? = :length] :wordlist
+  
+  if count :validwords < 2 [
+    print sentence [Error: Not enough words of length] :length
+    output []
+  ]
+  
+  ; Select two different random words
+  localmake "idx1 random count :validwords
+  localmake "idx2 :idx1
+  while [:idx2 = :idx1] [
+    make "idx2 random count :validwords
+  ]
+  
+  localmake "startword item :idx1 :validwords
+  localmake "targetword item :idx2 :validwords
+  
+  print [Selected words:]
+  print sentence [  Start: ] :startword
+  print sentence [  Target: ] :targetword
+  print []
+  
+  output list :startword :targetword
+end
+
+to wordpath
+  ; Load word list
+  localmake "wordlist loadwords "twl4crlf.txt
+  if empty? :wordlist [stop]
+  
+  ; Select random words
+  localmake "words selectwords :wordlist 4
+  if empty? :words [stop]
+  
+  ; Find path
+  findpath first :words last :words :wordlist
+end
+
