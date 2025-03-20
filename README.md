@@ -9,7 +9,8 @@ Most of the issues I had along the way are IO (file reading) related.
 
 Below is an example ouput of one of the programs I wrote.
 
-Their are two algorithms. One only allows a letter to be reomved and then replaced with another to forma new word: WORD -> W_RD -> WARD
+Their are two algorithms. 
+One only allows a letter to be removed and then replaced with another to form new word: WORD -> W_RD -> WARD
 The other allows for 'shfts': FARM -> _ARM (shift left) ARM_ -> ARMY
 
 I only worked on both using Python and Javscript (for my actual development project).
