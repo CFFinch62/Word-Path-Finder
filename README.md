@@ -1,20 +1,20 @@
 # Word-Path-Finder
-DFS (Depth First Search) routines in various languages to create a list words which are shortest path between 2 four letter words by only chnaging one letter at a time to create a new word.
+DFS (Depth First Search) routines in various languages to create a list words which are shortest path between 2 four letter words by only changing one letter at a time to create a new word.
 
 I had to work on this routine for a word game I am developing. 
-For practive and to remmeber seom of the syntax of the various languages I have used over the years I tried to make it work in a large set of langauges. 
+For practice, and to remember some of the syntax of the various languages I have used over the years, I tried to make it work in a large set of langauges. 
 Some I got to work and other I did not. 
 The folders they are in are self explanitory. 
 Most of the issues I had along the way are IO (file reading) related. 
 
 Below is an example ouput of one of the programs I wrote.
 
-Their are two algorithms. 
+There are two algorithms. 
 One only allows a letter to be removed and then replaced with another to form new word: WORD -> W_RD -> WARD
 The other allows for 'shfts': FARM -> _ARM (shift left) ARM_ -> ARMY
 
 I only worked on both using Python and Javscript (for my actual development project).
-The other languages all implement the 'no_shifts' algorithm.
+The other languages all implement only the 'no_shifts' algorithm.
 
 ❯ python word_path_tests.py
 Successfully loaded 5662 4-letter words from SOWPODS4.txt
